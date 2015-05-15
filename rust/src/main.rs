@@ -6,11 +6,7 @@ use rand::distributions::{Range, IndependentSample};
 
 /// Heaviside Step Function
 fn heaviside(val: f64) -> i8 {
-    if val < 0.0 {
-        0
-    } else {
-        1
-    }
+    (val >= 0.0) as i8
 }
 
 
