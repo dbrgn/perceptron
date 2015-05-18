@@ -8,7 +8,7 @@ more information, please refer to the following two blogposts:
 
 ## Contributed Implementations
 
-- Ruby by @mhutter
+- **Ruby** by @mhutter
 
 ## License
 
