@@ -5,8 +5,15 @@ use rand::distributions::{Range, IndependentSample};
 
 
 /// Heaviside Step Function
-fn heaviside(val: f64) -> i8 {
-    (val >= 0.0) as i8
+trait Heaviside {
+    fn heaviside(&self) -> i8;
+}
+
+/// Implement heaviside() for f64
+impl Heaviside for f64 {
+    fn heaviside(&self) -> i8 {
+        (*self >= 0.0) as i8
+    }
 }
 
 
@@ -62,7 +69,7 @@ fn main() {
         let result = dot(x, w);
 
         // Calculate the error
-        let error = expected - heaviside(result);
+        let error = expected - result.heaviside();
 
         // Update the weights
         w.0 += eta * error as f64 * x.0 as f64;
@@ -73,28 +80,28 @@ fn main() {
     // Show result
     for &TrainingDatum { input, .. } in &training_data {
         let result = dot(input, w);
-        println!("{} OR {}: {:.*} -> {}", input.0, input.1, 8, result, heaviside(result));
+        println!("{} OR {}: {:.*} -> {}", input.0, input.1, 8, result, result.heaviside());
     }
 }
 
 
 #[cfg(test)]
 mod test {
-    use super::heaviside;
+    use super::Heaviside;
 
     #[test]
     fn heaviside_positive() {
-        assert_eq!(heaviside(0.5), 1i8);
+        assert_eq!((0.5).heaviside(), 1i8);
     }
 
     #[test]
     fn heaviside_zero() {
-        assert_eq!(heaviside(0.0), 1i8);
+        assert_eq!((0.0).heaviside(), 1i8);
     }
 
     #[test]
     fn heaviside_negative() {
-        assert_eq!(heaviside(-0.5), 0i8);
+        assert_eq!((-0.5).heaviside(), 0i8);
     }
 
 }
