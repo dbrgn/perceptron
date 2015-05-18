@@ -1,13 +1,16 @@
 # A Perceptron in Ruby
-#
 
 # Some helper methods
-def heaviside(x)
-  x < 0 ? 0 : 1
+class Numeric
+  def heaviside
+    self < 0 ? 0 : 1
+  end
 end
 
-def dot(a, b)
-  a.zip(b).map { |x,y| x*y }.inject(:+)
+class Array
+  def dot(other)
+    self.zip(other).map { |x,y| x*y }.inject(:+)
+  end
 end
 
 # definitions for output
@@ -33,8 +36,8 @@ puts "initial weight: #{weight}"
 
 n.times do
   data, expected = training_data.sample
-  result = dot(weight, data)
-  error = expected - heaviside(result)
+  result = data.dot(weight)
+  error = expected - result.heaviside
   errors << error
 
   for i in 0...weight.size
@@ -43,9 +46,9 @@ n.times do
 end
 
 training_data.each do |data,expected|
-  result = dot(data, weight)
-  correct = heaviside(result) == expected ? '✓' : '✗'
-  puts "%s: % .17f -> %s %s" % [data[0,2], result, heaviside(result), correct]
+  result = data.dot(weight)
+  correct = result.heaviside == expected ? '✓' : '✗'
+  puts "%s: % .17f -> %s %s" % [data[0,2], result, result.heaviside, correct]
 end
 
 puts "final weight: #{weight}"
