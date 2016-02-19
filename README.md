@@ -9,6 +9,7 @@ more information, please refer to the following two blogposts:
 ## Contributed Implementations
 
 - **Ruby** by @mhutter
+- **Go** by @mhutter
 
 ## License
 
