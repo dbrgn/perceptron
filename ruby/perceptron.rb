@@ -1,57 +1,71 @@
 # A Perceptron in Ruby
 
 # Some helper methods
-class Numeric
-  def heaviside
-    self < 0 ? 0 : 1
+module Refinements
+  refine Numeric do
+    def heaviside
+      self < 0 ? 0 : 1
+    end
+  end
+
+  refine Array do
+    def dot(other)
+      zip(other).map { |x, y| x * y }.inject(:+)
+    end
   end
 end
 
-class Array
-  def dot(other)
-    self.zip(other).map { |x,y| x*y }.inject(:+)
-  end
-end
+using Refinements
 
 # definitions for output
-outmap = {
+OUTMAP = {
   -1 => '-',
-   0 => '.',
-   1 => '+'
+  0 => '.',
+  1 => '+'
 }
+OK  = "\e[0;32m✓\e[m\e[m"
+NOK = "\e[0;31m✗\e[m\e[m"
 
-training_data = [
+# constant data
+TRAINING_DATA = [
   [[0, 0, 1], 0],
   [[0, 1, 1], 1],
   [[1, 0, 1], 1],
-  [[1, 1, 1], 1],
+  [[1, 1, 1], 1]
 ]
+ETA = 0.2
+N = 100
 
+# runtime data
 weight = Array.new(3).map! { rand }
 errors = []
-eta = 0.2
-n = 100
 
 puts "initial weight: #{weight}"
 
-n.times do
-  data, expected = training_data.sample
+N.times do
+  data, expected = TRAINING_DATA.sample
   result = data.dot(weight)
   error = expected - result.heaviside
   errors << error
 
-  for i in 0...weight.size
-    weight[i] += eta * error * data[i]
+  (0...weight.size).each do |i|
+    weight[i] += ETA * error * data[i]
   end
 end
 
-training_data.each do |data,expected|
+# output for control
+TRAINING_DATA.each do |data, expected|
   result = data.dot(weight)
-  correct = result.heaviside == expected ? '✓' : '✗'
-  puts "%s: % .17f -> %s %s" % [data[0,2], result, result.heaviside, correct]
+
+  correct = result.heaviside == expected ? OK : NOK
+  puts format('%s: % .7f -> %s %s',
+              data[0, 2],
+              result,
+              result.heaviside,
+              correct)
 end
 
 puts "final weight: #{weight}"
 
 # display the progress
-puts errors.map { |e| outmap[e] }.join
+puts errors.map { |e| OUTMAP[e] }.join
